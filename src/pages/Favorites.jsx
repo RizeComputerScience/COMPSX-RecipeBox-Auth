@@ -1,13 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import RecipeGrid from '../components/RecipeGrid';
+import { useAuth } from '../context/AuthContext';
 
 const Favorites = () => {
   const [favoriteRecipes, setFavoriteRecipes] = useState([]);
+  const { user } = useAuth();
+
+
 
   useEffect(() => {
-    const favorites = JSON.parse(localStorage.getItem('favoriteRecipe')) || [];
-    setFavoriteRecipes(favorites);
-  }, []);
+    if (!user) {
+      setFavoriteRecipes([]);
+      return;
+    }
+
+    // Load all favorites from localStorage
+    const allFavorites = JSON.parse(localStorage.getItem('favoriteRecipesByUser')) || {};
+    
+    // Get only the current user's favorites
+    const userFavorites = allFavorites[user.username] || [];
+    setFavoriteRecipes(userFavorites);
+  }, [user]);
 
   return (
     <main className="main-content">

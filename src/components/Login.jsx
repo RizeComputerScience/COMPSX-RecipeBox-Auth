@@ -1,15 +1,37 @@
 import { useState } from 'react';
 import './Login.css';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('regular');
 
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [error, setError] = useState('');
+
+
   const handleSubmit = (e) => {
     e.preventDefault();
     // TODO: Implement authentication logic here
-    console.log('Login attempted with:', { username, password, role });
+
+    // Basic validation
+    if (!username || !password) {
+      setError('Please enter both username and password');
+      return;
+    }
+
+    // Clear any previous errors
+    setError('');
+
+    // Call login function from AuthContext
+    login(username, password, role);
+    
+    // Redirect to home page after successful login
+    navigate('/');
   };
 
   return (

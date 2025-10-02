@@ -1,13 +1,25 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 function RecipeCard({ recipe }) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const { user } = useAuth();
+
 
   useEffect(() => {
-    const favorites = JSON.parse(localStorage.getItem('favoriteRecipe')) || [];
-    const isRecipeFavorite = favorites.some(fav => fav.id === recipe.id);
+    if (!user) {
+      setIsFavorite(false);
+      return;
+    }
+
+    // Load all favorites organized by user
+    const allFavorites = JSON.parse(localStorage.getItem('favoriteRecipesByUser')) || {};
+    const userFavorites = allFavorites[user.username] || [];
+    
+    // Check if this recipe is in the current user's favorites
+    const isRecipeFavorite = userFavorites.some(fav => fav.id === recipe.id);
     setIsFavorite(isRecipeFavorite);
-  }, [recipe.id]);
+  }, [recipe.id, user]);
 
   const toggleFavorite = () => {
     const favorites = JSON.parse(localStorage.getItem('favoriteRecipe')) || [];
